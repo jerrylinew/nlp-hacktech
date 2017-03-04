@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "nlp-hacktech",
+  "private_key_id": "81c98483e8d9a4420311435747f9aed6e9462855",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDVO4yaezbVwkwt\n6H7+tXiSux4gKAyeyCrQS1jC/F3itqf1a0yfzJ0cqx/P6enOvsfVNgjiSK32YFPE\nETffvGGwl8/ZFoeDxNoE1fKnpOul7GXcMLHaXmgFPt96aAKV0s02lwQBK4LWz5P6\ncLndB1yUb7dfmV3kI9C1GXSfVdiIdWZMJM8JDCjk94abxf8nCv0t9RLiOzjZQGy4\n7e1lR9G79jMWXQ7ur9TRG/XSqqsutR//qKLnEG3qU6MrImvo3XnP7ASsDUDn6z0Z\nVmbytOHulzIri0qd5vnKU3eg7razMJezfquOP0Kj5mI5wioW/6GLkoAyBY6WcqiD\nOCrTUpWvAgMBAAECggEAJe/uWB3L58Ql4ZUX4yFOTmzUM0xs0mMymtSM+kQEQC3X\nPCbW/ydcXJllk4w+ePYgf6KZegkMSmVhAeU+V6QgjVa1OB52Bc+kKnAWOBVzh5XD\nmaVgP0XEpApHoHOY4icbM7cykzK2mJld7pTXvKdupUorCeszdT+aBl59DUwstjo5\nthH+I+O2yuN2uIyvKntXa53Y/BuxS08r+TJUONgo+QQGkBBqeryWYjlD+IojCLv8\n3vrKc/z0gfjOk7OnXXzEsc6BynYjKCbY7pRXKX6nCG6wLCXZgdQ4ieVW2Lc5MPq/\nqp0YLpX3k4BdAVhqKS2a6RW9wF3H6Z86v6oEXBS+IQKBgQD16kREHlR5Lo4f++hy\nkbtRiZ4gWFEGKIuzjk1H1Fl+b+9sCSrKQ22xnqCYesYEeY/OoJry2VvFUFmaXHED\nV88/kLH1ElsuPf07K47sqIeHQMQYvz9gQ/BjG8xp8cyw+FR0HJIUpvfo2sYZw5Nd\niirI4QUqCBymCtgxUKIk53zv3QKBgQDd+iqSVyLyDG1nxA+dHK1VmYJ+ZUdCFLl7\nPoMyAtPDa1tb6D7yT5fTqCupiGmI339MvUshojmcEQiwRaRubPU9ADA711kS9v47\nEcIVFDcAxQ8+a+ae63IaBDNBXa1D/bGIBw5AZ/pfHEtkcHF3an+R0qwZhUEpuNmw\nZM2dGp6I+wKBgQDVH6j2WErhk2V9dranxIFRUzGF2sStz6nzfZqga/r7x0r6mJ9L\nGFETJOUOASloa2okq7BeU95jDRX6367aNNnavy5btQLs+rBi/Ycqt4xtvcW1pNnq\nNjc5zbfFAdhib3XSA4je+S3V0vTpE0S+RqZ53fq5yLn7dV6Urss3rJ/syQKBgDXa\np9FxSo0m7rQqIQ+hEXyfDcXUlIE3vfhkpjfP78iNl1Co+/yVyuQS/OTYr6IBd0UK\n99tlHEz85Pq/KrGPxb/S9+DM0lODkRKLsGakzONm69fdHcqYnMorErRdIdhJCHVU\nIOUHVPsWRkRL83thXynlztMyPSj+K/JbwnbHKodZAoGBAMx7pcpOf8QKab1UyK54\nPA/pVob/yIn8KNZvVT+dznvFB8cmpR6KgJ7qdx47+Bw40DBa/bzTMG1MwiCz1VQN\nWbyedgkYKB2dACgJ+nDv5rFQrrgo+FLJsZdAFzRKsu+94P4Tq2yh+/95JAkfgMK5\n/6DJVzKJGK7As11S8FsQaN/2\n-----END PRIVATE KEY-----\n",
+  "client_email": "npl-hacktech@nlp-hacktech.iam.gserviceaccount.com",
+  "client_id": "102525495292763782862",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/npl-hacktech%40nlp-hacktech.iam.gserviceaccount.com"
+}
