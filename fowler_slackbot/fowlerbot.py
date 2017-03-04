@@ -31,18 +31,19 @@ def print_header(line):
 	print(header_line)
 
 # starterbot's ID as an environment variable
-BOT_ID = os.environ.get("BOT_ID")
+BOT_ID = 'U4DPEBW66'
 
 # constants
 AT_BOT = "<@" + BOT_ID + ">"
 EXAMPLE_COMMAND = "do"
 # instantiate Slack & Twilio clients
-slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
+SLACK_BOT_TOKEN = 'xoxb-149796404210-BBk15oz9YGqHeJE4BtLpJVhE'
+slack_client = SlackClient(SLACK_BOT_TOKEN)
 USERS = slack_client.api_call("users.list")
 not_letters_or_digits = u'!"#%()*+,-./:\';<=>?@[\]^_`{|}~\u2019\u2026\u201c\u201d\xa0'
 translate_table = dict((ord(char), u'') for char in not_letters_or_digits)
 
-def handle_command(user, text, service):
+def handle_command(user, text, service, flags):
 	papi = service.trainedmodels()
 	text = text.translate(translate_table)
 	body = {'input': {'csvInstance': [text]}}
@@ -77,7 +78,7 @@ def main(argv):
 		while True:
 			user, text = parse_slack_output(slack_client.rtm_read())
 			if user and text:
-				handle_command(user, text, service)
+				handle_command(user, text, service, flags)
 			time.sleep(READ_WEBSOCKET_DELAY)
 	else:
 		print("Connection failed. Invalid Slack token or bot ID?")
