@@ -11,7 +11,7 @@ headers = {
 
 try:
     conn = httplib.HTTPSConnection('westus.api.cognitive.microsoft.com')
-    conn.request("GET", "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/operations/4f3431841499411e95e1b8302bd1ee6e", "{body}", headers)
+    conn.request("GET", "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/operations/2790650462f04736954186cea5126d00", "{body}", headers)
     response = conn.getresponse()
     data = response
     output = json.loads(data.read())
@@ -19,8 +19,10 @@ try:
 except Exception as e:
     print e
 
-for x in output["operationProcessingResult"]["topics"]:
-    print x["keyPhrase"], x["score"]
+print output
+
+# for x in output["operationProcessingResult"]["topics"]:
+#     print x["keyPhrase"], x["score"]
 
 
 
