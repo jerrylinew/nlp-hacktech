@@ -1,0 +1,134 @@
+body{
+	font-family: 'Montserrat', sans-serif;
+	padding-top: 50px;
+	overflow-x: hidden;
+}
+
+.header-title
+{
+	padding-left: 25px;
+}
+
+.hashtag{
+	text-align: right;
+	color: rgba(210,210,210,1);
+}
+
+.company-name
+{
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 25px;
+	font-size: 24px;
+}
+
+.stop-sign{
+	margin-left: -40px;
+	margin-top: 10px;
+}
+
+.preview-stats
+{
+	padding-left: 5%;
+	padding-right: 5%;
+	color: rgba(255, 255, 255, 1);
+}
+
+.top5{
+	padding-left: 5%;
+	padding-right: 5%;
+}
+
+.msg, .msg-flag, .users, .users-flag{
+	font-size: 18px;
+}
+
+.footnotes{
+	padding-top: 10px;
+	padding-left: 25px;
+	padding-right: 25px;
+	background-color: rgba(204,234,255,1);
+	height: 100%;
+}
+
+.footnote{
+	font-size: 12px;
+}
+
+.footnote2{
+	font-size: 8px;
+}
+
+/*Panels*/
+
+.panel {
+	border: 0;
+	border-radius: 25px;
+	padding: 25px;
+}
+
+.panel-green{
+	background-color: rgba(52,168,83,1);
+	box-shadow: 0px 0px 0px rgba(52, 168, 83, 1);
+	-webkit-transition: box-shadow 0.5s;
+}
+
+.panel-green:hover{
+	box-shadow: 0px 0px 20px rgba(52, 168, 83, 1);
+	-webkit-transition: box-shadow 0.5s;
+}
+
+.panel-yellow{
+	background-color: rgba(251,188,5,1);
+	box-shadow: 0px 0px 0px rgba(251,188,5, 1);
+	-webkit-transition: box-shadow 0.5s;
+}
+
+.panel-yellow:hover{
+	box-shadow: 0px 0px 20px rgba(255,188,5, 1);
+	-webkit-transition: box-shadow 0.5s;
+}
+
+.panel-red{
+	background-color: rgba(234,67,53,1);
+	box-shadow: 0px 0px 0px rgba(234,67,53, 1);
+	-webkit-transition: box-shadow 0.5s;
+}
+
+.panel-red:hover{
+	box-shadow: 0px 0px 20px rgba(234,67,53, 1);
+	-webkit-transition: box-shadow 0.5s;
+}
+
+.panel-blue{
+	background-color: rgba(66,133,244,1);
+	box-shadow: 0px 0px 0px rgba(66,133,244, 1);
+	-webkit-transition: box-shadow 0.5s;
+}
+
+.panel-blue:hover{
+	box-shadow: 0px 0px 20px rgba(66,133,244, 1);
+	-webkit-transition: box-shadow 0.5s;
+}
+/*
+66 133 244 blue
+234 67 53 red
+251 188 5 yellow
+52 168 83 green
+*/
+
+/*Extras*/
+.thick-divide{
+	border: none;
+	height: 3px;
+	color: rgba(180, 180, 180, 1);
+	background-color: rgba(210, 210, 210, 1);
+}
+
+/*Media queries*/
+@media screen and (max-width: 768px)
+{
+	.stop-sign{
+		display: none;
+	}
+}
