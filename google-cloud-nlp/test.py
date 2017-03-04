@@ -110,21 +110,29 @@ def main(argv):
 		user = []
 		text = []
 		rating = []
-		for item in datafile:
+		for i, item in enumerate(datafile):
 			splitted = item.split(',')
-			user.append(splitted[0])
 			sample_text = ','.join(splitted[1:]).lower().translate(string.maketrans("",""), string.punctuation)[:-1]
-			text.append(sample_text)
 			body = {'input': {'csvInstance': [sample_text]}}
-			result = papi.predict(
-				body=body, id=flags.model_id, project=flags.project_id).execute()
+			while True:
+				try:
+					result = papi.predict(body=body, id=flags.model_id, project=flags.project_id).execute()
+					break
+				except Exception:
+					time.sleep(1)
+			user.append(splitted[0])
+			text.append(sample_text)
 			rating.append(float(result[u'outputValue']))
+			if i % 10 == 0:
+				print(i)
+			if i == 1000:
+				break
 
 		df = pd.DataFrame( {'user': user,
 			 'text': text,
 			 'rating': rating
 			})
-		print(df.sort_values('rating', ascending=False))
+		print(df.sort_values('rating', ascending=False).head(100))
 
 	except client.AccessTokenRefreshError:
 		print ('The credentials have been revoked or expired, please re-run '
