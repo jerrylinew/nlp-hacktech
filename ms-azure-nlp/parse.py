@@ -8,8 +8,8 @@ badwords = []
 for line in fob:
 	badwords.append(line[:-1])
 
-filein = "../data/andy.txt"
-fileout = "../data/andyout.txt"
+filein = "../data/jerry.txt"
+fileout = "../data/jerryout.txt"
 fin = open(filein)
 fout = open(fileout, 'w')
 
@@ -31,7 +31,7 @@ for i,line in enumerate(fin):
 			print trimmed
 			while True:
 				try:
-					grade = int(input())
+					#grade = int(input())
 					if grade == 0 or grade == 1 or grade == -1:
 						break
 					else:
