@@ -21,8 +21,8 @@ except Exception as e:
 
 print output
 
-# for x in output["operationProcessingResult"]["topics"]:
-#     print x["keyPhrase"], x["score"]
+for x in output["operationProcessingResult"]["topics"]:
+    print x["keyPhrase"], x["score"]
 
 
 
