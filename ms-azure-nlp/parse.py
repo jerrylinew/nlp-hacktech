@@ -8,8 +8,8 @@ badwords = []
 for line in fob:
 	badwords.append(line[:-1])
 
-filein = "../data/andy.txt"
-fileout = "../data/andyout.txt"
+filein = "../data/jerry.txt"
+fileout = "../data/jerryout.txt"
 fin = open(filein)
 fout = open(fileout, 'w')
 

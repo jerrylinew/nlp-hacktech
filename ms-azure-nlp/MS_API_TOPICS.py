@@ -12,7 +12,7 @@ headers = {
 
 #body = json.dumps(body)
 
-file = "../data/dirty.json"
+file = "../data/dirty.txt.json"
 json_data = open(file).read()
 json_data = unicode(json_data, errors='ignore')
 body = json.loads(json_data, strict=False)
