@@ -31,7 +31,7 @@ for i,line in enumerate(fin):
 			print trimmed
 			while True:
 				try:
-					grade = int(input())
+					#grade = int(input())
 					if grade == 0 or grade == 1 or grade == -1:
 						break
 					else:
