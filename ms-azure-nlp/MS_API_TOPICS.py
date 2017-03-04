@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ########### Python 2.7 #############
-import httplib, urllib, base64, json
+import httplib, urllib, base64, json, time
 
 headers = {
     # Request headers
@@ -159,7 +159,7 @@ Bush: I'm gonna go do our show.
 Zucker: Oh, you wanna reset? O.K.
 """
 
-for i in range(2):
+for i in range(100):
 	body["documents"].append({
       "id": i+1,
       "text": trumptxt
@@ -169,10 +169,25 @@ body = json.dumps(body)
 
 try:
     conn = httplib.HTTPSConnection('westus.api.cognitive.microsoft.com')
-    conn.request("POST", "/text/analytics/v2.0/keyphrases?", body, headers)
+    conn.request("POST", "/text/analytics/v2.0/topics?", body, headers)
     response = conn.getresponse()
-    data = response.read()
-    print(data)
+    data = response.getheaders()
+    operation_location = data[5][1]
+    print(operation_location)
     conn.close()
 except Exception as e:
     print e
+
+time.sleep(20)
+
+try:
+    conn = httplib.HTTPSConnection('westus.api.cognitive.microsoft.com')
+    conn.request("GET", operation_location)
+    response = conn.getresponse()
+    data = response
+    print(data.content)
+    conn.close()
+except Exception as e:
+    print e
+
+
