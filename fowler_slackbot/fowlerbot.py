@@ -252,9 +252,9 @@ def main(argv):
 		print("FowlerBot connected and running!")
 		while True:
 			user, userid, text, channel = parse_slack_output(slack_client.rtm_read())
-			if channel:
+			if channel == 'D4D3GBG0Z' or channel == 'D4DSX1674' or channel == 'D4EHJ93UN':
 				sexual_harassment_complaint(text, userid, dbconfig_accusations)
-			if user and text:
+			elif user and text:
 				handle_command(user, userid, text, service, flags, channel, dbconfig_redflags, dbconfig_messages)
 			time.sleep(READ_WEBSOCKET_DELAY)
 	else:
