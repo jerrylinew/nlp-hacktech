@@ -8,6 +8,8 @@ import pprint
 import sys
 import sqlite3
 import httplib
+import urllib
+import base64
 
 import requests
 
@@ -31,6 +33,7 @@ sys.path.insert(1, '/Library/Python/2.7/site-packages')
 def db_conn():
 	sqldb = "user.db"
 	sqltable = "users"
+	sqltable2 = "accusations"
 	schema = "(user, userid, num_violations)"
 	fileout = "./sqlout.csv"
 	
@@ -48,34 +51,51 @@ def db_conn():
 	output_data = sql.fetchall()
 	output_data = output_data[:5]
 	print output_data
-	db_post_output(output_data)
-	return dbconfig
-
-def db2_conn():
-	sqldb = "user.db"
-	sqltable = "accusations"
-	schema = "(user, userid, num_violations)"
-	fileout = "./accusations.csv"
-	conn = sqlite3.connect(sqldb)
-	sql = conn.cursor()
-	sql.execute("CREATE TABLE IF NOT EXISTS " + sqltable + " " + schema)
-	dbconfig = {
+	print "A" 
+	sql.execute("CREATE TABLE IF NOT EXISTS " + sqltable2 + " " + schema)
+	dbconfig2 = {
 		"conn": conn,
 		"sql": sql,
 		"sqltable": sqltable,
 		"schema": schema,
 		"fileout": fileout
 	}
-	sql.execute("SELECT user, num_violations FROM " + sqltable + " ORDER BY num_violations DESC")
-	output_data = sql.fetchall()
-	output_data = output_data[:5]
-	print output_data
-	db_post_output2(output_data)
-	return dbconfig
+	sql.execute("SELECT user, num_violations FROM " + sqltable2 + " ORDER BY num_violations DESC")
+	output_data2 = sql.fetchall()
+	output_data2 = output_data[:5]
+	print output_data2
+	print "B"
+	db_post_output(output_data)
+	db_post_output2(output_data2)
+	return dbconfig, dbconfig2
+
+# def db2_conn():
+# 	sqldb = "user.db"
+# 	sqltable = "accusations"
+# 	schema = "(user, userid, num_violations)"
+# 	fileout = "./accusations.csv"
+# 	conn = sqlite3.connect(sqldb)
+# 	sql = conn.cursor()
+# 	sql.execute("CREATE TABLE IF NOT EXISTS " + sqltable + " " + schema)
+# 	dbconfig = {
+# 		"conn": conn,
+# 		"sql": sql,
+# 		"sqltable": sqltable,
+# 		"schema": schema,
+# 		"fileout": fileout
+# 	}
+# 	sql.execute("SELECT user, num_violations FROM " + sqltable + " ORDER BY num_violations DESC")
+# 	output_data = sql.fetchall()
+# 	output_data = output_data[:5]
+# 	print output_data
+# 	db_post_output2(output_data)
+# 	return dbconfig
 
 def db_post_output(output_data):
+	# print(output_data)
 	try:
 		r = requests.post('http://localhost:3000/data', data={'data': output_data})
+		print 'C'
 	except Exception as e:
 		print e
 
@@ -94,18 +114,18 @@ def db_execute(dbconfig, user, userid):
 	sql.execute("DELETE FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
 	if user_data == None:
 		user_data = (user.encode('ascii'),userid.encode('ascii'),1)
-		
+
 	user_data = (user_data[0].encode('ascii'),user_data[1].encode('ascii'),user_data[2]+1)
 	sql.execute("INSERT INTO " + sqltable + " VALUES " + str(user_data))
-	
-	print user_data
+
 	conn.commit()
-	
+
 	#get top 5
 	sql.execute("SELECT user, num_violations FROM " + sqltable + " ORDER BY num_violations DESC")
 	output_data = sql.fetchall()
 	output_data = output_data[:5]
 	print output_data
+	# output_data = json.dumps(output_data)
 	db_post_output(output_data)
 
 def db_accusations(dbconfig, user, userid):
@@ -204,8 +224,7 @@ def sexual_harassment_complaint(text, userid, dbconfig):
 			pass
 
 def main(argv):
-	dbconfig = db_conn()
-	dbconfig2 = db2_conn()
+	dbconfig, dbconfig2 = db_conn()
 	READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
 	service, flags = sample_tools.init(
 		argv, 'prediction', 'v1.6', __doc__, __file__, parents=[argparser],
@@ -216,6 +235,7 @@ def main(argv):
 		print("FowlerBot connected and running!")
 		while True:
 			user, userid,  text, channel = parse_slack_output(slack_client.rtm_read())
+			print text
 			if channel == 'D4D3GBG0Z':
 				sexual_harassment_complaint(text, userid, dbconfig2)
 			elif user and text:
