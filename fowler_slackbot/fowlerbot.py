@@ -43,14 +43,26 @@ USERS = slack_client.api_call("users.list")
 not_letters_or_digits = u'!"#%()*+,-./:\';<=>?@[\]^_`{|}~\u2019\u2026\u201c\u201d\xa0'
 translate_table = dict((ord(char), u'') for char in not_letters_or_digits)
 TRESHOLD = 0.07
+
+COMMANDS = {
+    "offenders"	: "Fowlerbot will "
+}
+
+def list_offenders(channel):
+		response = "Top offenders are: "
+		slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
+
 def handle_command(user, userid,  text, service, flags, channel):
+	if text == "<@u4dpebw66>: offenders":
+		list_offenders(channel)
+		return
 	papi = service.trainedmodels()
 	text = text.translate(translate_table)
 	body = {'input': {'csvInstance': [text]}}
 	result = papi.predict(body=body, id=flags.model_id, project=flags.project_id).execute()
 	value = float(result[u'outputValue'])
 	if value > TRESHOLD:
-		response = "<@" + userid + "> said something inappropriate. Confidence level (0 to 1) is: " + str(value)+ ". This violation has been logged."
+		response = "<@" + userid + "> said something inappropriate. Confidence level (0 to 1) is: " + str(max(0, min(1, value)))+ ". This violation has been logged."
 		slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 
 
