@@ -59,6 +59,24 @@ html(lang='en')
     hr.thick-divide
     .top5.row
       .col-lg-5.user-redflag
+          h3 Top 5 Most Reported Users
+            table.table.table-striped
+              thead
+                tr
+                  th User
+                  th Times Reported
+              tbody
+                - for(var i = 0; i < reported.length; i+=3){
+                  tr(class=reported[i])
+                    td=reported[i]
+                    td=reported[i + 2]
+                - }
+      .col-lg-7
+        h3.chart-title Number of Red Flagged Messages in the Last 24 Hours
+        canvas(id='myChart', style='', width='650', height='300')
+    hr.thick-divide
+    .row.misc
+      .col-md-5.msg-inapp
         h3 Top 5 Individuals with Most Red Flags for Sexual Harassment*
         table.table.table-striped
           thead
@@ -67,93 +85,28 @@ html(lang='en')
               th Name
               th Red Flags
           tbody
-            - for(var i = 0; i < data.length; i+=2){
-              tr
-                td=i/2 + 1
-                td=data[i]
-                td=data[i + 1]
+            - for(var i = 0; i < data.length; i+=3){
+            tr(id=data[i], class='select')
+              td=i/2 + 1
+              td=data[i]
+              td=data[i + 2]
             - }
-      .col-lg-7
-        h3.chart-title Number of Red Flagged Messages in the Last 24 Hours
-        canvas(id='myChart', style='', width='650', height='300')
-    hr.thick-divide
-    .row.misc
-      .col-md-5.msg-inapp
-        h3 Top 10 Most Inappropriate Messages
+      .col-md-7.user-report
+        h3 Top 5 Harassment Messages for user
+            span(id='user')
         table.table.table-striped
           thead
             tr
               th Message
-              th Confidence [0,1]
+              th Harassment Rating
           tbody
-            tr
-              td Lorem ipsum
-              td 0.12323
-            tr
-              td Lorem ipsum
-              td 0.12323
-            tr
-              td Lorem ipsum
-              td 0.12323
-            tr
-              td Lorem ipsum
-              td 0.12323
-            tr
-              td Lorem ipsum
-              td 0.12323
-            tr
-              td Lorem ipsum
-              td 0.12323
-            tr
-              td Lorem ipsum
-              td 0.12323
-            tr
-              td Lorem ipsum
-              td 0.12323
-            tr
-              td Lorem ipsum
-              td 0.12323
-            tr
-              td Lorem ipsum
-              td 0.12323
-      .col-md-7.user-report
-        h3 Top 10 Most Reported Users
-        table.table.table-striped
-          thead
-            tr
-              th User
-              th Times Reported
+              - for(var i = 0; i < messages.length; i+=3){
+                tr(class='u' + messages[i] + ' toggle', style="display: none;")
+                  td=messages[i + 1]
+                  td=messages[i + 2]
+              - }
           tbody
-            tr
-              td Lorem ipsum
-              td 1
-            tr
-              td Lorem ipsum
-              td 1
-            tr
-              td Lorem ipsum
-              td 1
-            tr
-              td Lorem ipsum
-              td 1
-            tr
-              td Lorem ipsum
-              td 1
-            tr
-              td Lorem ipsum
-              td 1
-            tr
-              td Lorem ipsum
-              td 1
-            tr
-              td Lorem ipsum
-              td 1
-            tr
-              td Lorem ipsum
-              td 1
-            tr
-              td Lorem ipsum
-              td 1
+
     footer.footnotes
       .footnote
         | Created by Jayendra Jog, Jerry Li, Andy Shih, and Kyle Wong.
@@ -164,3 +117,6 @@ html(lang='en')
     script(src='js/chart.min.js')
     script(src='js/script.js')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js')
+    script(src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous")

@@ -23,4 +23,10 @@ window.onload = function()
         }
     };
     myNewChart = new Chart(ctx).Line(data, {barShowStroke: false});
+
+    $('.select').on('click', function(){
+        $('.toggle').hide();
+        id = $(this).attr('id');
+        $('.u' + id).show();
+    });
 }

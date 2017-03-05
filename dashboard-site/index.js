@@ -17,6 +17,8 @@ app.use(bodyParser.json());
 
 var data;
 var reported;
+var messages;
+var metadata;
 
 app.post('/data', (req, res)=>{
     data = req.body;
@@ -30,9 +32,21 @@ app.post('/reported', (req, res)=>{
     res.send('hello world');
 })
 
+app.post('/messages', (req, res)=>{
+    messages = req.body;
+    console.log(messages);
+    res.send('hello world');
+})
+
+app.post('/metadata', (req, res)=>{
+    metadata = req.body;
+    console.log(metadata)
+    res.send('hello world');
+})
+
 app.get('/', function(req, res){
-    console.log(data)
-    res.render('index.pug', {'data': data.data, 'reported': reported.data});
+    console.log(metadata)
+    res.render('index.pug', {'data': data.data, 'reported': reported.data, 'messages': messages.data, 'metadata': metadata.data});
 })
 
 

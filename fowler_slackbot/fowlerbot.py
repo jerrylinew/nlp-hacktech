@@ -83,10 +83,10 @@ def db_conn():
 	print accusation_data
 	db_post_output(accusation_data, dbconfig_accusations["endpoint"])
 
-	messages_data = {"data": []}
+	messages_data = []
 	for x in redflags_data:
 		sql.execute("SELECT user, message, score FROM " + dbconfig_messages["sqltable"] + " WHERE userid='" + x[1] + "' ORDER BY score DESC")
-		messages_data["data"] = messages_data["data"] + sql.fetchall()[:5]
+		messages_data = messages_data + sql.fetchall()[:5]
 	if (len(messages_data) == 0):
 		messages_data = [("dummy", "hello", "0")]
 	db_post_output(messages_data, dbconfig_messages["endpoint"])
@@ -149,10 +149,12 @@ def db_add_msg(dbconfig, msgdata, redflags_data):
 
 	#get flagged msg of top 5
 	print redflags_data
-	messages_data = {"data": []}
+	messages_data = []
 	for x in redflags_data:
 		sql.execute("SELECT user, message, score FROM " + dbconfig["sqltable"] + " WHERE userid='" + x[1] + "' ORDER BY score DESC")
-		messages_data["data"] = messages_data["data"] + sql.fetchall()[:5]
+		messages_data = messages_data + sql.fetchall()[:5]
+	if (len(messages_data) == 0):
+		messages_data = [("dummy", "hello", "0")]
 	print messages_data
 	db_post_output(messages_data, dbconfig["endpoint"])
 
