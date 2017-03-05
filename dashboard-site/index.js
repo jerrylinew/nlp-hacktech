@@ -16,15 +16,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 var data;
+var reported;
 
 app.post('/data', (req, res)=>{
     data = req.body;
     console.log(data)
 })
 
+app.post('/reported', (req, res)=>{
+    reported = req.body;
+    console.log(reported)
+})
+
 app.get('/', function(req, res){
     console.log(data)
-    res.render('index.pug', {'data': data.data});
+    res.render('index.pug', {'data': data.data, 'reported': reported.data});
 })
 
 
