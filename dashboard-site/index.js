@@ -20,12 +20,14 @@ var reported;
 
 app.post('/data', (req, res)=>{
     data = req.body;
-    console.log(data)
+    console.log(data);
+    res.send('hello world');
 })
 
 app.post('/reported', (req, res)=>{
     reported = req.body;
-    console.log(reported)
+    console.log(reported);
+    res.send('hello world');
 })
 
 app.get('/', function(req, res){

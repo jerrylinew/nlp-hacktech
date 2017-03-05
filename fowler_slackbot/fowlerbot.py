@@ -51,20 +51,18 @@ def db_conn():
 	output_data = sql.fetchall()
 	output_data = output_data[:5]
 	print output_data
-	print "A" 
 	sql.execute("CREATE TABLE IF NOT EXISTS " + sqltable2 + " " + schema)
 	dbconfig2 = {
 		"conn": conn,
 		"sql": sql,
-		"sqltable": sqltable,
+		"sqltable": sqltable2,
 		"schema": schema,
 		"fileout": fileout
 	}
 	sql.execute("SELECT user, num_violations FROM " + sqltable2 + " ORDER BY num_violations DESC")
 	output_data2 = sql.fetchall()
-	output_data2 = output_data[:5]
+	output_data2 = output_data2[:5]
 	print output_data2
-	print "B"
 	db_post_output(output_data)
 	db_post_output2(output_data2)
 	return dbconfig, dbconfig2
@@ -92,10 +90,8 @@ def db_conn():
 # 	return dbconfig
 
 def db_post_output(output_data):
-	# print(output_data)
 	try:
 		r = requests.post('http://localhost:3000/data', data={'data': output_data})
-		print 'C'
 	except Exception as e:
 		print e
 
@@ -235,7 +231,6 @@ def main(argv):
 		print("FowlerBot connected and running!")
 		while True:
 			user, userid,  text, channel = parse_slack_output(slack_client.rtm_read())
-			print text
 			if channel == 'D4D3GBG0Z':
 				sexual_harassment_complaint(text, userid, dbconfig2)
 			elif user and text:
