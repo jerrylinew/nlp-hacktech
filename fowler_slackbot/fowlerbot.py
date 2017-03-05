@@ -71,11 +71,15 @@ def db_conn():
 
 	sql.execute("SELECT user, userid, num_violations FROM " + dbconfig_redflags["sqltable"] + " ORDER BY num_violations DESC")
 	redflags_data = sql.fetchall()[:5]
+	if (len(redflags_data) == 0):
+		redflag_data = [("dummy", "1", "1")]
 	print redflags_data
 	db_post_output(redflags_data, dbconfig_redflags["endpoint"])
 
 	sql.execute("SELECT user, userid, num_violations FROM " + dbconfig_accusations["sqltable"] + " ORDER BY num_violations DESC")
 	accusation_data = sql.fetchall()[:5]
+	if (len(accusation_data) == 0):
+		accusation_data = [("dummy", "1", "1")]
 	print accusation_data
 	db_post_output(accusation_data, dbconfig_accusations["endpoint"])
 
@@ -83,6 +87,8 @@ def db_conn():
 	for x in redflags_data:
 		sql.execute("SELECT user, message, score FROM " + dbconfig_messages["sqltable"] + " WHERE userid='" + x[1] + "' ORDER BY score DESC")
 		messages_data["data"] = messages_data["data"] + sql.fetchall()[:5]
+	if (len(messages_data) == 0):
+		messages_data = [("dummy", "hello", "0")]
 	db_post_output(messages_data, dbconfig_messages["endpoint"])
 
 	return dbconfig_redflags, dbconfig_accusations, dbconfig_messages
