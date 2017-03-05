@@ -37,7 +37,7 @@ BOT_ID = 'U4DPEBW66'
 AT_BOT = "<@" + BOT_ID + ">"
 EXAMPLE_COMMAND = "do"
 # instantiate Slack & Twilio clients
-SLACK_BOT_TOKEN = 
+SLACK_BOT_TOKEN = 'xoxb-149796404210-UzeyiCDf7yoBqBIWbtMAfKuM'
 slack_client = SlackClient(SLACK_BOT_TOKEN)
 USERS = slack_client.api_call("users.list")
 not_letters_or_digits = u'!"#%()*+,-./:\';<=>?@[\]^_`{|}~\u2019\u2026\u201c\u201d\xa0'
