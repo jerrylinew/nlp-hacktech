@@ -72,7 +72,7 @@ def db_conn():
 	sql.execute("SELECT user, userid, num_violations FROM " + dbconfig_redflags["sqltable"] + " ORDER BY num_violations DESC")
 	redflags_data = sql.fetchall()[:5]
 	if (len(redflags_data) == 0):
-		redflag_data = [("dummy", "1", "1")]
+		redflags_data = [("dummy", "1", "1")]
 	print redflags_data
 	db_post_output(redflags_data, dbconfig_redflags["endpoint"])
 
