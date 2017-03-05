@@ -29,13 +29,52 @@ def db_conn():
 	sqldb = "user.db"
 	sqltable = "users"
 	schema = "(user, userid, num_violations)"
-	
+	fileout = "./sqlout.csv"
 	
 	conn = sqlite3.connect(sqldb)
 	sql = conn.cursor()
 	sql.execute("CREATE TABLE IF NOT EXISTS " + sqltable + " " + schema)
-	return conn, sql, sqltable
+	dbconfig = {
+		"conn": conn,
+		"sql": sql,
+		"sqltable": sqltable,
+		"schema": schema,
+		"fileout": fileout
+	}
+	return dbconfig
 
+def db_post_output(output_data):
+	try:
+		conn = httplib.HTTPSConnection('localhost')
+		conn.request("POST", "/", output_data, headers)
+		response = conn.getresponse()
+		data = json.loads(response.read())
+		conn.close()
+	except Exception as e:
+		print e
+
+def db_execute(dbconfig, user, userid):
+	conn = dbconfig["conn"]
+	sql = dbconfig["sql"]
+	sqltable = dbconfig["sqltable"]
+	sql.execute("SELECT * FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
+	user_data = sql.fetchone()
+	sql.execute("DELETE FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
+	if user_data == None:
+		user_data = (user.encode('ascii'),userid.encode('ascii'),1)
+		
+	user_data = (user_data[0].encode('ascii'),user_data[1].encode('ascii'),user_data[2]+1)
+	sql.execute("INSERT INTO " + sqltable + " VALUES " + str(user_data))
+	
+	print user_data
+	conn.commit()
+	
+	#get top 5
+	sql.execute("SELECT user, num_violations FROM " + sqltable + " ORDER BY num_violations DESC")
+	output_data = sql.fetchall()
+	output_data = output_data[:5]
+	print output_data
+	db_post_output(output_data)
 
 def print_header(line):
 	'''Format and print header block sized to length of line'''
@@ -60,14 +99,14 @@ translate_table = dict((ord(char), u'') for char in not_letters_or_digits)
 TRESHOLD = 0.07
 
 COMMANDS = {
-    "offenders"	: "Fowlerbot will "
+    "offenders"	: "Fowlerbot will show the top offenders"
 }
 
 def list_offenders(channel):
 		response = "Top offenders are: "
 		slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 
-def handle_command(user, userid,  text, service, flags, channel, conn, sql, sqltable):
+def handle_command(user, userid,  text, service, flags, channel, dbconfig):
 	if text == "<@u4dpebw66>: offenders":
 			list_offenders(channel)
 			return
@@ -80,17 +119,8 @@ def handle_command(user, userid,  text, service, flags, channel, conn, sql, sqlt
 		response = "<@" + userid + "> said something inappropriate. Confidence level (0 to 1) is: " + str(max(0, min(1, value)))+ ". This violation has been logged."
 		slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 		
-		sql.execute("SELECT * FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
-		user_data = sql.fetchone()
-		sql.execute("DELETE FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
-		if user_data == None:
-			user_data = (user.encode('ascii'),userid.encode('ascii'),1)
-			
-		user_data = (user_data[0].encode('ascii'),user_data[1].encode('ascii'),user_data[2]+1)
-		sql.execute("INSERT INTO " + sqltable + " VALUES " + str(user_data))
-		
-		print user_data
-		conn.commit()
+		db_execute(dbconfig, user, userid)
+
 
 def parse_slack_output(slack_rtm_output):
 	output_list = slack_rtm_output
@@ -111,7 +141,7 @@ def parse_slack_output(slack_rtm_output):
 	return None, None, None, None
 
 def main(argv):
-	conn, sql, sqltable = db_conn()
+	dbconfig = db_conn()
 	READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
 	service, flags = sample_tools.init(
 		argv, 'prediction', 'v1.6', __doc__, __file__, parents=[argparser],
@@ -123,7 +153,7 @@ def main(argv):
 		while True:
 			user, userid,  text, channel = parse_slack_output(slack_client.rtm_read())
 			if user and text:
-				handle_command(user, userid, text, service, flags, channel, conn, sql, sqltable)
+				handle_command(user, userid, text, service, flags, channel, dbconfig)
 			time.sleep(READ_WEBSOCKET_DELAY)
 	else:
 		print("Connection failed. Invalid Slack token or bot ID?")
