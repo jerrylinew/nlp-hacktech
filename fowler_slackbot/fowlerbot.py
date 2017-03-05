@@ -37,34 +37,41 @@ BOT_ID = 'U4DPEBW66'
 AT_BOT = "<@" + BOT_ID + ">"
 EXAMPLE_COMMAND = "do"
 # instantiate Slack & Twilio clients
-SLACK_BOT_TOKEN = 'xoxb-149796404210-BBk15oz9YGqHeJE4BtLpJVhE'
+SLACK_BOT_TOKEN = 
 slack_client = SlackClient(SLACK_BOT_TOKEN)
 USERS = slack_client.api_call("users.list")
 not_letters_or_digits = u'!"#%()*+,-./:\';<=>?@[\]^_`{|}~\u2019\u2026\u201c\u201d\xa0'
 translate_table = dict((ord(char), u'') for char in not_letters_or_digits)
-
-def handle_command(user, text, service, flags):
+TRESHOLD = 0.07
+def handle_command(user, userid,  text, service, flags, channel):
 	papi = service.trainedmodels()
 	text = text.translate(translate_table)
 	body = {'input': {'csvInstance': [text]}}
 	result = papi.predict(body=body, id=flags.model_id, project=flags.project_id).execute()
-	print float(result[u'outputValue'])
+	value = float(result[u'outputValue'])
+	if value > TRESHOLD:
+		response = "<@" + userid + "> said something inappropriate. Confidence level (0 to 1) is: " + str(value)+ ". This violation has been logged."
+		slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
+
+
 
 def parse_slack_output(slack_rtm_output):
-  output_list = slack_rtm_output
-  if output_list and len(output_list) > 0:
-      for output in output_list:
-      	try:
-      		for member in USERS['members']:
-      			try: 
-        			if member['id'] == output['user']:
-        				return member['name'], \
-        							 output['text'].strip().lower()
-        		except Exception:
-      				pass
-      	except Exception:
-      		pass
-  return None, None
+	output_list = slack_rtm_output
+	if output_list and len(output_list) > 0:
+		for output in output_list:
+			try:
+				for member in USERS['members']:
+					try:
+						if member['id'] == output['user']:
+							return member['name'], \
+									 member['id'], \
+        							 output['text'].strip().lower(), \
+									 output['channel']
+					except Exception:
+						pass
+			except Exception:
+				pass
+	return None, None, None, None
 
 def main(argv):
 	READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
@@ -76,9 +83,9 @@ def main(argv):
 	if slack_client.rtm_connect():
 		print("FowlerBot connected and running!")
 		while True:
-			user, text = parse_slack_output(slack_client.rtm_read())
+			user, userid,  text, channel = parse_slack_output(slack_client.rtm_read())
 			if user and text:
-				handle_command(user, text, service, flags)
+				handle_command(user, userid, text, service, flags, channel)
 			time.sleep(READ_WEBSOCKET_DELAY)
 	else:
 		print("Connection failed. Invalid Slack token or bot ID?")
@@ -86,4 +93,3 @@ def main(argv):
 
 if __name__ == "__main__":
 	main(sys.argv)
-   
