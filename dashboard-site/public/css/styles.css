@@ -22,6 +22,10 @@ body{
 	margin-top: 10px;
 }
 
+.icon-status{
+	padding-top: 20px;
+}
+
 .preview-stats
 {
 	padding-left: 5%;
@@ -44,9 +48,11 @@ body{
 	padding-right: 5%;
 }
 
+/*
 .msg, .msg-flag, .users, .users-flag{
 	font-size: 18px;
 }
+*/
 
 #myChart{
 	padding-left: 5%;

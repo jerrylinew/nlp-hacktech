@@ -8,6 +8,7 @@ html(lang='en')
     link(rel='stylesheet', type='text/css', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css')
     link(rel='stylesheet', type='text/css', href='https://fonts.googleapis.com/css?family=Roboto|Josefin+Sans|Droid+Sans|Pontano+Sans|Ubuntu|Montserrat')
     link(rel='stylesheet', href='css/styles.css')
+    link(rel='stylesheet', type='text/css', href='http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css')
   body
     nav.navbar.navbar-inverse.navbar-fixed-top
       .container
@@ -25,20 +26,36 @@ html(lang='en')
     .row.preview-stats
       .col-xs-6.col-md-3
         .panel.panel-blue
-          h4 Messages Analyzed
-          p.msg 2187
+          .row
+            .col-sm-3
+              i.fa.fa-envelope-o.fa-3x.icon-status
+            .col-sm-9
+              h2.msg 2187
+              p Messages Analyzed
       .col-xs-6.col-md-3
         .panel.panel-red
-          h4 Redflagged Messages
-          p.msg-flag 33
+          .row
+            .col-sm-3
+              i.fa.fa-envelope-o.fa-3x.icon-status
+            .col-sm-9
+              h2.msg-flag 33
+              p Redflagged Messages
       .col-xs-6.col-md-3
         .panel.panel-green
-          h4 Users
-          p.users 188
+          .row
+            .col-sm-3
+              i.fa.fa-users.fa-3x.icon-status
+            .col-sm-9
+              h2.users 188
+              p Users
       .col-xs-6.col-md-3
         .panel.panel-yellow
-          h4 Redflagged Users
-          p.users-flag 7
+          .row
+            .col-sm-3
+              i.fa.fa-users.fa-3x.icon-status
+            .col-sm-9
+              h2.users-flag 7
+              p Redflagged Users
     hr.thick-divide
     .top5.row
       .col-lg-5.user-redflag
