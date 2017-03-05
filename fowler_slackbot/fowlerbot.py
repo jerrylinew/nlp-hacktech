@@ -90,6 +90,7 @@ def db_conn():
 	if (len(messages_data) == 0):
 		messages_data = [("dummy", "hello", "0")]
 	db_post_output(messages_data, dbconfig_messages["endpoint"])
+	db_metadata(dbconfig_messages)
 
 	return dbconfig_redflags, dbconfig_accusations, dbconfig_messages
 
