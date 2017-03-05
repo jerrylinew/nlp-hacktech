@@ -29,79 +29,71 @@ sys.path.insert(1, '/Library/Python/2.7/site-packages')
 
 
 
+def db_init(dbconfig):
+	sql = dbconfig["sql"]
+	sqltable = dbconfig["sqltable"]
+	schema = dbconfig["schema"]
+	sql.execute("CREATE TABLE IF NOT EXISTS " + sqltable + " " + schema)
+
 # sqlite config
 def db_conn():
 	sqldb = "user.db"
-	sqltable = "users"
-	sqltable2 = "accusations"
-	schema = "(user, userid, num_violations)"
-	fileout = "./sqlout.csv"
-	
 	conn = sqlite3.connect(sqldb)
 	sql = conn.cursor()
-	sql.execute("CREATE TABLE IF NOT EXISTS " + sqltable + " " + schema)
-	dbconfig = {
+	
+	dbconfig_redflags = {
 		"conn": conn,
 		"sql": sql,
-		"sqltable": sqltable,
-		"schema": schema,
-		"fileout": fileout
+		"sqltable": "red_flags",
+		"schema": "(user, userid, num_violations)",
+		"endpoint": "/data"
 	}
-	sql.execute("SELECT user, num_violations FROM " + sqltable + " ORDER BY num_violations DESC")
-	output_data = sql.fetchall()
-	output_data = output_data[:5]
-	print output_data
-	sql.execute("CREATE TABLE IF NOT EXISTS " + sqltable2 + " " + schema)
-	dbconfig2 = {
+	
+	dbconfig_accusations = {
 		"conn": conn,
 		"sql": sql,
-		"sqltable": sqltable2,
-		"schema": schema,
-		"fileout": fileout
+		"sqltable": "accusations",
+		"schema": "(user, userid, num_violations)",
+		"endpoint": "/reported"
 	}
-	sql.execute("SELECT user, num_violations FROM " + sqltable2 + " ORDER BY num_violations DESC")
-	output_data2 = sql.fetchall()
-	output_data2 = output_data2[:5]
-	print output_data2
-	db_post_output(output_data)
-	db_post_output2(output_data2)
-	return dbconfig, dbconfig2
 
-# def db2_conn():
-# 	sqldb = "user.db"
-# 	sqltable = "accusations"
-# 	schema = "(user, userid, num_violations)"
-# 	fileout = "./accusations.csv"
-# 	conn = sqlite3.connect(sqldb)
-# 	sql = conn.cursor()
-# 	sql.execute("CREATE TABLE IF NOT EXISTS " + sqltable + " " + schema)
-# 	dbconfig = {
-# 		"conn": conn,
-# 		"sql": sql,
-# 		"sqltable": sqltable,
-# 		"schema": schema,
-# 		"fileout": fileout
-# 	}
-# 	sql.execute("SELECT user, num_violations FROM " + sqltable + " ORDER BY num_violations DESC")
-# 	output_data = sql.fetchall()
-# 	output_data = output_data[:5]
-# 	print output_data
-# 	db_post_output2(output_data)
-# 	return dbconfig
+	dbconfig_messages = {
+		"conn": conn,
+		"sql": sql,
+		"sqltable": "messages",
+		"schema": "(user, userid, message, score)",
+		"endpoint": "/messages"
+	}
+	
+	db_init(dbconfig_redflags)
+	db_init(dbconfig_accusations)
+	db_init(dbconfig_messages)
 
-def db_post_output(output_data):
+	sql.execute("SELECT user, userid, num_violations FROM " + dbconfig_redflags["sqltable"] + " ORDER BY num_violations DESC")
+	redflags_data = sql.fetchall()[:5]
+	print redflags_data
+	db_post_output(redflags_data, dbconfig_redflags["endpoint"])
+
+	sql.execute("SELECT user, userid, num_violations FROM " + dbconfig_accusations["sqltable"] + " ORDER BY num_violations DESC")
+	accusation_data = sql.fetchall()[:5]
+	print accusation_data
+	db_post_output(accusation_data, dbconfig_accusations["endpoint"])
+
+	messages_data = {"data": []}
+	for x in redflags_data:
+		sql.execute("SELECT user, message, score FROM " + dbconfig_messages["sqltable"] + " WHERE userid='" + x[1] + "' ORDER BY score DESC")
+		messages_data["data"] = messages_data["data"] + sql.fetchall()[:5]
+	db_post_output(messages_data, dbconfig_messages["endpoint"])
+
+	return dbconfig_redflags, dbconfig_accusations, dbconfig_messages
+
+def db_post_output(output_data, endpoint):
 	try:
-		r = requests.post('http://localhost:3000/data', data={'data': output_data})
+		r = requests.post('http://localhost:3000' + endpoint, data={'data': output_data})
 	except Exception as e:
 		print e
 
-def db_post_output2(output_data):
-	try:
-		r = requests.post('http://localhost:3000/reported', data={'data': output_data})
-	except Exception as e:
-		print e
-
-def db_execute(dbconfig, user, userid):
+def db_execute(dbconfig, user, userid, incr):
 	conn = dbconfig["conn"]
 	sql = dbconfig["sql"]
 	sqltable = dbconfig["sqltable"]
@@ -109,43 +101,54 @@ def db_execute(dbconfig, user, userid):
 	user_data = sql.fetchone()
 	sql.execute("DELETE FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
 	if user_data == None:
-		user_data = (user.encode('ascii'),userid.encode('ascii'),1)
+		user_data = (user.encode('ascii'),userid.encode('ascii'),0)
 
-	user_data = (user_data[0].encode('ascii'),user_data[1].encode('ascii'),user_data[2]+1)
+	user_data = (user_data[0].encode('ascii'),user_data[1].encode('ascii'),user_data[2]+incr)
 	sql.execute("INSERT INTO " + sqltable + " VALUES " + str(user_data))
 
 	conn.commit()
 
 	#get top 5
-	sql.execute("SELECT user, num_violations FROM " + sqltable + " ORDER BY num_violations DESC")
+	sql.execute("SELECT user, userid, num_violations FROM " + sqltable + " ORDER BY num_violations DESC")
 	output_data = sql.fetchall()
 	output_data = output_data[:5]
-	print output_data
-	# output_data = json.dumps(output_data)
-	db_post_output(output_data)
 
-def db_accusations(dbconfig, user, userid):
+	db_post_output(output_data, dbconfig["endpoint"])
+	return output_data
+
+def db_metadata(dbconfig):
 	conn = dbconfig["conn"]
 	sql = dbconfig["sql"]
 	sqltable = dbconfig["sqltable"]
-	sql.execute("SELECT * FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
-	user_data = sql.fetchone()
-	sql.execute("DELETE FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
-	if user_data == None:
-		user_data = (user.encode('ascii'),userid.encode('ascii'),1)
-		
-	user_data = (user_data[0].encode('ascii'),user_data[1].encode('ascii'),user_data[2]+1)
-	sql.execute("INSERT INTO " + sqltable + " VALUES " + str(user_data))
-	
-	print user_data
-	conn.commit()
-	
-	#get top 5
-	sql.execute("SELECT user, num_violations FROM " + sqltable + " ORDER BY num_violations DESC")
-	output_data = sql.fetchall()
-	output_data = output_data[:5]
-	print output_data
-	db_post_output2(output_data)
+
+	sql.execute("SELECT * FROM " + dbconfig["sqltable"])
+	num_msgs = len(sql.fetchall())
+	sql.execute("SELECT * FROM " + dbconfig["sqltable"] + " WHERE score > " + str(THRESHOLD))
+	num_fmsgs = len(sql.fetchall())
+	sql.execute("SELECT DISTINCT user FROM " + dbconfig["sqltable"])
+	num_users = len(sql.fetchall())
+	sql.execute("SELECT DISTINCT user FROM " + dbconfig["sqltable"] + " WHERE score > " + str(THRESHOLD))
+	num_fusers = len(sql.fetchall())
+
+	metadata = {"data": (num_msgs, num_fmsgs, num_users, num_fusers)}
+	db_post_output(metadata, "/metadata")
+
+def db_add_msg(dbconfig, msgdata, redflags_data):
+	conn = dbconfig["conn"]
+	sql = dbconfig["sql"]
+	sqltable = dbconfig["sqltable"]
+
+	msgdata = (msgdata[0].encode('ascii'), msgdata[1].encode('ascii'), msgdata[2].encode('ascii'), msgdata[3])
+	sql.execute("INSERT INTO " + sqltable + " VALUES " + str(msgdata))
+
+	#get flagged msg of top 5
+	print redflags_data
+	messages_data = {"data": []}
+	for x in redflags_data:
+		sql.execute("SELECT user, message, score FROM " + dbconfig["sqltable"] + " WHERE userid='" + x[1] + "' ORDER BY score DESC")
+		messages_data["data"] = messages_data["data"] + sql.fetchall()[:5]
+	print messages_data
+	db_post_output(messages_data, dbconfig["endpoint"])
 
 def print_header(line):
 	'''Format and print header block sized to length of line'''
@@ -167,7 +170,7 @@ slack_client = SlackClient(SLACK_BOT_TOKEN)
 USERS = slack_client.api_call("users.list")
 not_letters_or_digits = u'!"#%()*+,-./:\';<=>?@[\]^_`{|}~\u2019\u2026\u201c\u201d\xa0'
 translate_table = dict((ord(char), u'') for char in not_letters_or_digits)
-TRESHOLD = 0.07
+THRESHOLD = 0.07
 
 COMMANDS = {
     "offenders"	: "Fowlerbot will show the top offenders"
@@ -177,7 +180,9 @@ def list_offenders(channel):
 		response = "Top offenders are: "
 		slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 
-def handle_command(user, userid,  text, service, flags, channel, dbconfig):
+def handle_command(user, userid,  text, service, flags, channel, dbconfig_redflags, dbconfig_messages):
+	if user == "fowler_bot":
+			return
 	if text == "<@u4dpebw66>: offenders":
 			list_offenders(channel)
 			return
@@ -186,11 +191,18 @@ def handle_command(user, userid,  text, service, flags, channel, dbconfig):
 	body = {'input': {'csvInstance': [text]}}
 	result = papi.predict(body=body, id=flags.model_id, project=flags.project_id).execute()
 	value = float(result[u'outputValue'])
-	if value > TRESHOLD:
+
+	incr = 0
+	if value > THRESHOLD:
 		response = "<@" + userid + "> said something inappropriate. Confidence level (0 to 1) is: " + str(max(0, min(1, value)))+ ". This violation has been logged."
 		slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 		
-		db_execute(dbconfig, user, userid)
+		incr = 1
+	redflags_data = db_execute(dbconfig_redflags, user, userid, incr)
+	db_add_msg(dbconfig_messages, (user, userid, text, value), redflags_data)
+	db_metadata(dbconfig_messages)
+
+
 
 def parse_slack_output(slack_rtm_output):
 	output_list = slack_rtm_output
@@ -215,12 +227,12 @@ def sexual_harassment_complaint(text, userid, dbconfig):
 		try:
 			if member['name'] in text:
 				print member['name'] + " is accused of sexual harassment"
-				db_accusations(dbconfig, member['name'], member['id'])
+				db_execute(dbconfig, member['name'], member['id'], 1)
 		except Exception:
 			pass
 
 def main(argv):
-	dbconfig, dbconfig2 = db_conn()
+	dbconfig_redflags, dbconfig_accusations, dbconfig_messages = db_conn()
 	READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
 	service, flags = sample_tools.init(
 		argv, 'prediction', 'v1.6', __doc__, __file__, parents=[argparser],
@@ -230,11 +242,11 @@ def main(argv):
 	if slack_client.rtm_connect():
 		print("FowlerBot connected and running!")
 		while True:
-			user, userid,  text, channel = parse_slack_output(slack_client.rtm_read())
-			if channel == 'D4D3GBG0Z':
-				sexual_harassment_complaint(text, userid, dbconfig2)
-			elif user and text:
-				handle_command(user, userid, text, service, flags, channel, dbconfig)
+			user, userid, text, channel = parse_slack_output(slack_client.rtm_read())
+			if channel:
+				sexual_harassment_complaint(text, userid, dbconfig_accusations)
+			if user and text:
+				handle_command(user, userid, text, service, flags, channel, dbconfig_redflags, dbconfig_messages)
 			time.sleep(READ_WEBSOCKET_DELAY)
 	else:
 		print("Connection failed. Invalid Slack token or bot ID?")
