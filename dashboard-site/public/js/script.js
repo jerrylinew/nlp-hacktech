@@ -27,6 +27,9 @@ window.onload = function()
     $('.select').on('click', function(){
         $('.toggle').hide();
         id = $(this).attr('id');
+        $('.success').removeClass('success')
+        $(this).addClass('success');
         $('.u' + id).show();
+        $('#user').text(' ' + id)
     });
 }

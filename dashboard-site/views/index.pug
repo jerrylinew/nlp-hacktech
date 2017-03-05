@@ -30,7 +30,7 @@ html(lang='en')
             .col-sm-3
               i.fa.fa-envelope-o.fa-3x.icon-status
             .col-sm-9
-              h2.msg 2187
+              h2.msg=metadata[0]
               p Messages Analyzed
       .col-xs-6.col-md-3
         .panel.panel-red
@@ -38,7 +38,7 @@ html(lang='en')
             .col-sm-3
               i.fa.fa-envelope-o.fa-3x.icon-status
             .col-sm-9
-              h2.msg-flag 33
+              h2.msg-flag=metadata[1]
               p Redflagged Messages
       .col-xs-6.col-md-3
         .panel.panel-green
@@ -46,7 +46,7 @@ html(lang='en')
             .col-sm-3
               i.fa.fa-users.fa-3x.icon-status
             .col-sm-9
-              h2.users 188
+              h2.users=metadata[2]
               p Users
       .col-xs-6.col-md-3
         .panel.panel-yellow
@@ -54,23 +54,23 @@ html(lang='en')
             .col-sm-3
               i.fa.fa-users.fa-3x.icon-status
             .col-sm-9
-              h2.users-flag 7
+              h2.users-flag=metadata[3]
               p Redflagged Users
     hr.thick-divide
     .top5.row
       .col-lg-5.user-redflag
           h3 Top 5 Most Reported Users
-            table.table.table-striped
-              thead
-                tr
-                  th User
-                  th Times Reported
-              tbody
-                - for(var i = 0; i < reported.length; i+=3){
-                  tr(class=reported[i])
-                    td=reported[i]
-                    td=reported[i + 2]
-                - }
+          table.table.table-striped
+            thead
+              tr
+                th User
+                th Times Reported
+            tbody
+              - for(var i = 0; i < reported.length; i+=3){
+                tr(class=reported[i])
+                  td=reported[i]
+                  td=reported[i + 2]
+              - }
       .col-lg-7
         h3.chart-title Number of Red Flagged Messages in the Last 24 Hours
         canvas(id='myChart', style='', width='650', height='300')
@@ -87,12 +87,12 @@ html(lang='en')
           tbody
             - for(var i = 0; i < data.length; i+=3){
             tr(id=data[i], class='select')
-              td=i/2 + 1
+              td=i/3 + 1
               td=data[i]
               td=data[i + 2]
             - }
       .col-md-7.user-report
-        h3 Top 5 Harassment Messages for user
+        h3 Top 5 Harassment Messages for User
             span(id='user')
         table.table.table-striped
           thead
