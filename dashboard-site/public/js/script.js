@@ -12,7 +12,7 @@ window.onload = function()
                 strokeColor: "rgba(220,220,220,0.8)",
                 highlightFill: "rgba(0,165,229,0.75)",
                 highlightStroke: "rgba(220,220,220,1)",
-                data: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 100]
+                data: [0, 0, 0, 0, 0, 5, 5, 6, 8, 5, 3, 1, 0]
             }],
         options: {
             title: {

@@ -7,6 +7,10 @@ import argparse
 import pprint
 import sys
 import sqlite3
+import httplib
+import urllib
+import base64
+import requests
 
 from apiclient import discovery
 from apiclient import sample_tools
@@ -44,12 +48,9 @@ def db_conn():
 	return dbconfig
 
 def db_post_output(output_data):
+	print(output_data)
 	try:
-		conn = httplib.HTTPSConnection('localhost')
-		conn.request("POST", "/", output_data, headers)
-		response = conn.getresponse()
-		data = json.loads(response.read())
-		conn.close()
+		r = requests.post('http://localhost:3000/data', data={'data': output_data})
 	except Exception as e:
 		print e
 
@@ -62,18 +63,18 @@ def db_execute(dbconfig, user, userid):
 	sql.execute("DELETE FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
 	if user_data == None:
 		user_data = (user.encode('ascii'),userid.encode('ascii'),1)
-		
+
 	user_data = (user_data[0].encode('ascii'),user_data[1].encode('ascii'),user_data[2]+1)
 	sql.execute("INSERT INTO " + sqltable + " VALUES " + str(user_data))
-	
-	print user_data
+
 	conn.commit()
-	
+
 	#get top 5
 	sql.execute("SELECT user, num_violations FROM " + sqltable + " ORDER BY num_violations DESC")
 	output_data = sql.fetchall()
 	output_data = output_data[:5]
 	print output_data
+	# output_data = json.dumps(output_data)
 	db_post_output(output_data)
 
 def print_header(line):
