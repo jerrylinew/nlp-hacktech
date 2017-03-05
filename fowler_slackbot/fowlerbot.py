@@ -137,7 +137,7 @@ def db_metadata(dbconfig):
 	sql.execute("SELECT DISTINCT user FROM " + dbconfig["sqltable"] + " WHERE score > " + str(THRESHOLD))
 	num_fusers = len(sql.fetchall())
 
-	metadata = {"data": (num_msgs, num_fmsgs, num_users, num_fusers)}
+	metadata = [num_msgs, num_fmsgs, num_users, num_fusers]
 	db_post_output(metadata, "/metadata")
 
 def db_add_msg(dbconfig, msgdata, redflags_data):
