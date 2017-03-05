@@ -52,7 +52,7 @@ BOT_ID = 'U4DPEBW66'
 AT_BOT = "<@" + BOT_ID + ">"
 EXAMPLE_COMMAND = "do"
 # instantiate Slack & Twilio clients
-SLACK_BOT_TOKEN = "xoxb-149796404210-4tikROfUcq05H5i2HV9ijsJX"
+SLACK_BOT_TOKEN = os.environ['SLACK_KEY']
 slack_client = SlackClient(SLACK_BOT_TOKEN)
 USERS = slack_client.api_call("users.list")
 not_letters_or_digits = u'!"#%()*+,-./:\';<=>?@[\]^_`{|}~\u2019\u2026\u201c\u201d\xa0'
@@ -67,8 +67,17 @@ def handle_command(user, userid,  text, service, flags, channel, conn, sql, sqlt
 	if value > TRESHOLD:
 		response = "<@" + userid + "> said something inappropriate. Confidence level (0 to 1) is: " + str(value)+ ". This violation has been logged."
 		slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
-		print str((user.encode('ascii'),userid,1))
-		sql.execute("INSERT INTO " + sqltable + " VALUES " + str((user.encode('ascii'),userid.encode('ascii'),1)))
+		
+		sql.execute("SELECT * FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
+		user_data = sql.fetchone()
+		sql.execute("DELETE FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
+		if user_data == None:
+			user_data = (user.encode('ascii'),userid.encode('ascii'),1)
+			
+		user_data = (user_data[0].encode('ascii'),user_data[1].encode('ascii'),user_data[2]+1)
+		sql.execute("INSERT INTO " + sqltable + " VALUES " + str(user_data))
+		
+		print user_data
 		conn.commit()
 
 
