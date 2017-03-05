@@ -26,7 +26,9 @@
 <link rel="stylesheet" href="css/styles.css">
 
 <!--JavaScript Links-->
+<script src="js/script.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="js/chart.min.js"></script>
 
 </head>
 
@@ -80,11 +82,14 @@
     <ul>Number of messages analyzed: ___</ul>
     <ul>Number of red flagged messages: ___</ul> -->
 
+    <!--Chart-->
+    
+
     <!--Top 5 and red flags-->
     <hr class="thick-divide">
     <div class="top5 row">
-        <div class="col-md-5">
-            <h3 class="secondary-header-title">Top 5 Individuals with Most Red Flags for Sexual Harassment*</h3>
+        <div class="col-lg-5">
+            <h3>Top 5 Individuals with Most Red Flags for Sexual Harassment*</h3>
         	<table class="table table-striped">
                 <thead>
                   <tr>
@@ -122,7 +127,12 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-md-7">
+        <div class="col-lg-7">
+            <h3 class="chart-title">Number of Red Flagged Messages in the Last 24 Hours</h3>
+            <canvas id="myChart" width="650" height="300"></canvas>
+        </div>
+        <!--
+        <div class="top-msg col-md-7">
             <h3 class="secondary-header-title">Most Notable Sexual Harassment Messages</h3>
             <table class="table table-striped">
                 <tbody>
@@ -146,7 +156,7 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </div> -->
     </div>
 
     <footer class="footnotes">

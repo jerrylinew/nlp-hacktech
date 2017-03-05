@@ -4,7 +4,7 @@ body{
 	overflow-x: hidden;
 }
 
-.header-title
+.header-title, .chart-title
 {
 	padding-left: 25px;
 }
@@ -13,7 +13,7 @@ body{
 {
 	padding-top: 10px;
 	padding-bottom: 10px;
-	padding-left: 25px;
+	padding-left: 5%;
 	font-size: 24px;
 }
 
@@ -34,8 +34,18 @@ body{
 	padding-right: 5%;
 }
 
+.top-msg{
+	padding-left: 5%;
+	padding-right: 5%;
+}
+
 .msg, .msg-flag, .users, .users-flag{
 	font-size: 18px;
+}
+
+#myChart{
+	padding-left: 5%;
+	padding-right: 5%;
 }
 
 .footnotes{
@@ -118,6 +128,11 @@ body{
 	height: 3px;
 	color: rgba(180, 180, 180, 1);
 	background-color: rgba(210, 210, 210, 1);
+}
+
+.center{
+	margin: auto;
+	width: 55%;
 }
 
 /*Media queries*/

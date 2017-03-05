@@ -1,7 +1,6 @@
 import json, string
 
-dirty_file = open('dirty.txt', 'r')
-training = open('train1.csv', 'w')
+training = open('.csv', 'r')
 
 dirty = []
 
@@ -10,9 +9,6 @@ for line in dirty_file:
 
 dirty[-1] += '\n'
 dirty = [' ' + item[:-1] + ' ' for item in dirty]
-
-not_letters_or_digits = u'!"#%()*+,-./:;<=>?@[\]^_`{|}~\u2019\u2026\u201c\u201d\xa0'
-translate_table = dict((ord(char), u'') for char in not_letters_or_digits)
 
 with open('../data/gamergate.json') as data_file:
 	data = [' ' + json.loads(line)['text'].lower().translate(translate_table) + ' ' for line in data_file]

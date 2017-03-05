@@ -6,6 +6,7 @@ import string
 import argparse
 import pprint
 import sys
+import sqlite3
 
 from apiclient import discovery
 from apiclient import sample_tools
@@ -20,6 +21,20 @@ argparser.add_argument('project_id',
     help='Project Id of your Google Cloud Project')
 
 sys.path.insert(1, '/Library/Python/2.7/site-packages')
+
+
+
+# sqlite config
+def db_conn():
+	sqldb = "user.db"
+	sqltable = "users"
+	schema = "(user, userid, num_violations)"
+	
+	
+	conn = sqlite3.connect(sqldb)
+	sql = conn.cursor()
+	sql.execute("CREATE TABLE IF NOT EXISTS " + sqltable + " " + schema)
+	return conn, sql, sqltable
 
 
 def print_header(line):
@@ -37,7 +52,7 @@ BOT_ID = 'U4DPEBW66'
 AT_BOT = "<@" + BOT_ID + ">"
 EXAMPLE_COMMAND = "do"
 # instantiate Slack & Twilio clients
-SLACK_BOT_TOKEN = 
+SLACK_BOT_TOKEN = os.environ['SLACK_KEY']
 slack_client = SlackClient(SLACK_BOT_TOKEN)
 USERS = slack_client.api_call("users.list")
 not_letters_or_digits = u'!"#%()*+,-./:\';<=>?@[\]^_`{|}~\u2019\u2026\u201c\u201d\xa0'
@@ -52,10 +67,10 @@ def list_offenders(channel):
 		response = "Top offenders are: "
 		slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 
-def handle_command(user, userid,  text, service, flags, channel):
+def handle_command(user, userid,  text, service, flags, channel, conn, sql, sqltable):
 	if text == "<@u4dpebw66>: offenders":
-		list_offenders(channel)
-		return
+			list_offenders(channel)
+			return
 	papi = service.trainedmodels()
 	text = text.translate(translate_table)
 	body = {'input': {'csvInstance': [text]}}
@@ -64,8 +79,18 @@ def handle_command(user, userid,  text, service, flags, channel):
 	if value > TRESHOLD:
 		response = "<@" + userid + "> said something inappropriate. Confidence level (0 to 1) is: " + str(max(0, min(1, value)))+ ". This violation has been logged."
 		slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
-
-
+		
+		sql.execute("SELECT * FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
+		user_data = sql.fetchone()
+		sql.execute("DELETE FROM " + sqltable + " WHERE userid='" + userid.encode('ascii') + "'")
+		if user_data == None:
+			user_data = (user.encode('ascii'),userid.encode('ascii'),1)
+			
+		user_data = (user_data[0].encode('ascii'),user_data[1].encode('ascii'),user_data[2]+1)
+		sql.execute("INSERT INTO " + sqltable + " VALUES " + str(user_data))
+		
+		print user_data
+		conn.commit()
 
 def parse_slack_output(slack_rtm_output):
 	output_list = slack_rtm_output
@@ -86,6 +111,7 @@ def parse_slack_output(slack_rtm_output):
 	return None, None, None, None
 
 def main(argv):
+	conn, sql, sqltable = db_conn()
 	READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
 	service, flags = sample_tools.init(
 		argv, 'prediction', 'v1.6', __doc__, __file__, parents=[argparser],
@@ -97,7 +123,7 @@ def main(argv):
 		while True:
 			user, userid,  text, channel = parse_slack_output(slack_client.rtm_read())
 			if user and text:
-				handle_command(user, userid, text, service, flags, channel)
+				handle_command(user, userid, text, service, flags, channel, conn, sql, sqltable)
 			time.sleep(READ_WEBSOCKET_DELAY)
 	else:
 		print("Connection failed. Invalid Slack token or bot ID?")
